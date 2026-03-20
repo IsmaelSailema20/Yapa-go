@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { useState } from 'react'
 import { logout } from '@/actions/auth'
 import { ThemeToggle } from '@/components/shared/theme-toggle'
+import { NotificationBell } from '@/components/shared/notification-bell'
 
 const comercioLinks = [
   { href: '/comercio', label: 'Dashboard', icon: BarChart3 },
@@ -22,7 +23,7 @@ const clienteLinks = [
   { href: '/cliente/notificaciones', label: 'Alertas', icon: Bell },
 ]
 
-export function Navbar({ rol }: { rol: string | null }) {
+export function Navbar({ rol, userId }: { rol: string | null; userId?: string }) {
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
 
@@ -63,6 +64,7 @@ export function Navbar({ rol }: { rol: string | null }) {
 
           <div className="flex items-center gap-2">
             <ThemeToggle />
+            {userId && <NotificationBell userId={userId} />}
             <form action={logout}>
               <Button type="submit" variant="ghost" size="sm" className="hidden sm:flex items-center gap-2 text-muted-foreground">
                 <LogOut className="h-4 w-4" />
