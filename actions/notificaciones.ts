@@ -11,7 +11,9 @@ export async function marcarNotificacionLeida(notifId: string) {
   return { success: true }
 }
 
-export async function marcarTodasLeidas() {
+export async function marcarLeidasPorIds(ids: string[]) {
+  if (!ids || ids.length === 0) return { success: true }
+  
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'No autenticado' }
@@ -20,7 +22,7 @@ export async function marcarTodasLeidas() {
     .from('notificaciones')
     .update({ leida: true })
     .eq('usuario_id', user.id)
-    .eq('leida', false)
+    .in('id', ids)
 
   return { success: true }
 }
