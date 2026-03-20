@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Store, MapPin, CheckCircle2 } from 'lucide-react'
+import { LocationPicker } from '@/components/shared/location-picker'
 
 const initialState = {
   error: null,
@@ -49,23 +50,7 @@ export default function OnboardingPage() {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-primary/20 bg-primary/5 p-6 text-center space-y-4">
-              <div className="flex items-center justify-center gap-2 text-primary font-semibold">
-                <CheckCircle2 className="h-5 w-5" />
-                <span>Ubicación GPS Detectada</span>
-              </div>
-              <p className="text-sm text-muted-foreground">La integración Leaflet se hará en la Fase 3. Por ahora, utilizaremos coordenadas por defecto para tu visibilidad en el mapa.</p>
-              <div className="flex gap-4 max-w-md mx-auto">
-                <div className="flex-1 space-y-2 text-left">
-                  <Label htmlFor="lat" className="text-xs text-muted-foreground uppercase">Latitud</Label>
-                  <Input id="lat" name="lat" type="text" defaultValue="-0.180653" readOnly className="bg-white/50 dark:bg-black/50 border-none" />
-                </div>
-                <div className="flex-1 space-y-2 text-left">
-                  <Label htmlFor="lng" className="text-xs text-muted-foreground uppercase">Longitud</Label>
-                  <Input id="lng" name="lng" type="text" defaultValue="-78.467838" readOnly className="bg-white/50 dark:bg-black/50 border-none" />
-                </div>
-              </div>
-            </div>
+            <LocationPicker />
 
             {state?.error && (
               <div className="rounded-lg bg-destructive/15 p-4 text-center">
@@ -82,3 +67,4 @@ export default function OnboardingPage() {
     </div>
   )
 }
+
