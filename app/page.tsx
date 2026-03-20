@@ -3,22 +3,22 @@ import { ArrowRight, Leaf, ShieldCheck, MapPin } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col overflow-hidden bg-background">
+    <div className="flex min-h-screen flex-col overflow-x-hidden bg-background">
       {/* Navbar Minimalista */}
-      <header className="absolute top-0 z-50 flex w-full items-center justify-between p-6">
+      <header className="absolute top-0 z-50 flex w-full items-center justify-between px-4 py-4 sm:px-6 sm:py-6">
         <div className="flex items-center gap-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-            <Leaf className="h-6 w-6 text-primary" />
+          <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
+            <Leaf className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
           </div>
-          <span className="text-xl font-bold tracking-tight text-foreground">YapaSegura</span>
+          <span className="hidden sm:inline-block text-xl font-bold tracking-tight text-foreground">YapaSegura</span>
         </div>
-        <div className="flex items-center gap-4">
-          <Link href="/login" className="text-sm font-medium hover:text-primary transition-colors">
+        <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+          <Link href="/login" className="text-xs sm:text-sm font-medium hover:text-primary transition-colors">
             Iniciar Sesión
           </Link>
           <Link 
             href="/registro" 
-            className="rounded-full bg-foreground px-5 py-2.5 text-sm font-medium text-background transition-transform hover:scale-105"
+            className="rounded-full bg-foreground px-4 py-2 sm:px-5 sm:py-2.5 text-xs sm:text-sm font-medium text-background transition-transform hover:scale-105"
           >
             Únete
           </Link>
@@ -26,7 +26,7 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <main className="relative flex flex-1 flex-col items-center justify-center">
+      <main className="relative flex flex-1 flex-col items-center pt-32 pb-16 lg:pt-48 lg:justify-center">
         {/* Background Gradients */}
         <div className="absolute top-0 -z-10 h-full w-full bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-primary/20 via-background to-background"></div>
         <div className="absolute top-1/4 -left-64 -z-10 h-96 w-96 rounded-full bg-secondary/30 blur-3xl mix-blend-multiply"></div>
@@ -39,7 +39,7 @@ export default function Home() {
               Rescatando la comida del Ecuador
             </div>
             
-            <h1 className="text-5xl font-extrabold tracking-tight sm:text-7xl lg:text-8xl">
+            <h1 className="text-4xl font-extrabold tracking-tight sm:text-6xl md:text-7xl lg:text-8xl">
               Menos desperdicio, <br />
               <span className="text-transparent bg-clip-text bg-linear-to-r from-primary to-emerald-400">
                 más ahorro.
@@ -69,7 +69,7 @@ export default function Home() {
         </div>
 
         {/* Feature Cards Floating */}
-        <div className="mt-24 grid w-full max-w-5xl grid-cols-1 gap-6 px-4 sm:grid-cols-3 sm:px-6 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300 fill-mode-both">
+        <div className="mt-16 lg:mt-24 grid w-full max-w-5xl grid-cols-1 gap-6 px-4 py-8 sm:grid-cols-3 sm:px-6 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300 fill-mode-both">
           <div className="flex flex-col items-center rounded-3xl border bg-background/50 p-6 text-center shadow-lg backdrop-blur-md transition-transform hover:-translate-y-2">
             <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-secondary/20">
               <MapPin className="h-7 w-7 text-secondary-foreground" />
