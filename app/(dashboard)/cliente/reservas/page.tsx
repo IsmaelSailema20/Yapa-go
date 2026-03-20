@@ -1,8 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { formatCurrency } from '@/lib/constants'
 import { Badge } from '@/components/ui/badge'
-import { Package, Clock, CheckCircle2, XCircle, Copy } from 'lucide-react'
+import { Package, Clock, CheckCircle2, XCircle } from 'lucide-react'
 import { ReservaActions } from '@/components/cliente/reserva-actions'
+import { ReservaRealtimeListener } from '@/components/cliente/reserva-realtime-listener'
 
 export default async function ClienteReservasPage() {
   const supabase = await createClient()
@@ -54,6 +55,8 @@ export default async function ClienteReservasPage() {
 
   return (
     <div className="space-y-6">
+      {/* Realtime listener — shows celebration modal on delivery */}
+      <ReservaRealtimeListener userId={user!.id} />
       <div>
         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Mis Reservas</h1>
         <p className="text-muted-foreground mt-1">

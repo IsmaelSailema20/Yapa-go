@@ -18,6 +18,6 @@ const MapView = dynamic(
   }
 )
 
-export function MapWrapper({ packs }: { packs: PackConUbicacion[] }) {
-  return <MapView packs={packs} />
+export function MapWrapper({ packs, reservedPackIds = [] }: { packs: PackConUbicacion[], reservedPackIds?: string[] }) {
+  return <MapView packs={packs} reservedPackIds={reservedPackIds} />
 }

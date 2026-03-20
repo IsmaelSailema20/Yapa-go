@@ -14,7 +14,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar rol={rol} />
+      <Navbar rol={rol} userId={user?.id} />
       <main className="mx-auto max-w-7xl px-4 pb-24 pt-6 sm:px-6 lg:px-8">
         {children}
       </main>
