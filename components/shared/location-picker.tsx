@@ -21,13 +21,24 @@ const LocationPickerMap = dynamic(
   }
 )
 
-export function LocationPicker() {
-  const [lat, setLat] = useState(-0.180653)
-  const [lng, setLng] = useState(-78.467838)
+interface LocationPickerProps {
+  initialLat?: number
+  initialLng?: number
+  onLocationSelect?: (lat: number, lng: number) => void
+}
+
+export function LocationPicker({
+  initialLat,
+  initialLng,
+  onLocationSelect
+}: LocationPickerProps) {
+  const [lat, setLat] = useState(initialLat ?? -0.180653)
+  const [lng, setLng] = useState(initialLng ?? -78.467838)
 
   function handleLocationChange(newLat: number, newLng: number) {
     setLat(newLat)
     setLng(newLng)
+    onLocationSelect?.(newLat, newLng)
   }
 
   return (
