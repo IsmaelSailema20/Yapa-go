@@ -1,7 +1,86 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
+
+// ────────────────────────────────────────────────
+// Fase 4: Validación OTP por parte del comercio
+// ────────────────────────────────────────────────
+
+export async function validarOTP(codigo: string) {
+  if (!codigo || codigo.length !== 6) {
+    return { error: 'El código debe tener 6 dígitos' }
+  }
+
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'No autenticado' }
+
+  // Buscar la reserva pendiente con este OTP
+  const { data: reserva, error: findError } = await supabase
+    .from('reservas')
+    .select(`
+      id,
+      cliente_id,
+      estado,
+      pack_id,
+      packs (
+        id,
+        titulo,
+        cantidad_disponible,
+        comercio_id
+      )
+    `)
+    .eq('codigo_otp', codigo.trim())
+    .eq('estado', 'pendiente')
+    .maybeSingle()
+
+  if (findError || !reserva) {
+    return { error: 'Código inválido o reserva no encontrada' }
+  }
+
+  // Verificar que el pack pertenece a este comercio
+  if ((reserva.packs as any).comercio_id !== user.id) {
+    return { error: 'Este código no corresponde a un pack de tu comercio' }
+  }
+
+  const pack = reserva.packs as any
+
+  // Marcar reserva como entregada
+  const { error: updateError } = await supabase
+    .from('reservas')
+    .update({ estado: 'entregado' })
+    .eq('id', reserva.id)
+
+  if (updateError) return { error: 'Error al validar la reserva' }
+
+  // Descontar stock ahora que fue validado
+  const nuevaCantidad = Math.max(0, pack.cantidad_disponible - 1)
+  await supabase
+    .from('packs')
+    .update({
+      cantidad_disponible: nuevaCantidad,
+      estado: nuevaCantidad === 0 ? 'agotado' : 'disponible',
+    })
+    .eq('id', pack.id)
+
+  // Notificar al cliente que su pack fue entregado
+  await supabase.from('notificaciones').insert({
+    usuario_id: reserva.cliente_id,
+    titulo: '¡Pack entregado!',
+    mensaje: `Tu reserva de "${pack.titulo}" fue confirmada. ¡Buen provecho!`,
+    tipo: 'entrega',
+  })
+
+  return {
+    success: true,
+    titulo: pack.titulo,
+    mensaje: `¡Pack "${pack.titulo}" entregado correctamente!`,
+  }
+}
+
+// ────────────────────────────────────────────────
+// Fase 3: Reservas del cliente
+// ────────────────────────────────────────────────
 
 export async function reservarPack(packId: string) {
   const supabase = await createClient()
@@ -54,7 +133,7 @@ export async function reservarPack(packId: string) {
     return { error: 'Error al crear la reserva: ' + reservaError.message }
   }
 
-  // 4. (Eliminado a petición: el stock ya no se descuenta al reservar sino al validar el OTP)
+  // 4. (Stock no se descuenta al reservar — se descuenta al validar el OTP)
 
   // 5. Notificar al comercio
   await supabase.from('notificaciones').insert({
@@ -90,13 +169,11 @@ export async function cancelarReserva(reservaId: string) {
     return { error: 'Reserva no válida o ya procesada' }
   }
 
-  // Cancelar reserva
+  // Cancelar reserva (no restaurar stock porque no se descontó al reservar)
   await supabase
     .from('reservas')
     .update({ estado: 'cancelado' })
     .eq('id', reservaId)
-
-  // (Eliminado a petición: como no se descontó el stock al reservar, no hay que devolverlo al cancelar)
 
   return { success: true }
 }
