@@ -21,9 +21,10 @@ interface PackDetailProps {
   userLat?: number
   userLng?: number
   onShowRoute?: () => void
+  isAlreadyReserved?: boolean
 }
 
-export function PackDetail({ pack, open, onOpenChange, userLat, userLng, onShowRoute }: PackDetailProps) {
+export function PackDetail({ pack, open, onOpenChange, userLat, userLng, onShowRoute, isAlreadyReserved }: PackDetailProps) {
   const [reservando, setReservando] = useState(false)
   const [resultado, setResultado] = useState<{
     success?: boolean
@@ -109,7 +110,12 @@ export function PackDetail({ pack, open, onOpenChange, userLat, userLng, onShowR
           <div className="flex items-center gap-4 rounded-xl bg-muted/60 p-4">
             <div>
               <p className="text-xs text-muted-foreground font-medium">Precio rescate</p>
-              <p className="text-2xl font-bold text-primary">{formatCurrency(pack.precio_rescate)}</p>
+              <div className="flex items-center gap-2">
+                <p className="text-2xl font-bold text-primary">{formatCurrency(pack.precio_rescate)}</p>
+                <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400 border-0 px-1.5 py-0 h-5 text-[10px]">
+                  -{descuento}%
+                </Badge>
+              </div>
             </div>
             <div className="ml-auto text-right">
               <p className="text-xs text-muted-foreground font-medium">Precio original</p>
@@ -187,13 +193,16 @@ export function PackDetail({ pack, open, onOpenChange, userLat, userLng, onShowR
             <Button
               className="w-full h-12 text-base font-medium rounded-xl shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5"
               onClick={handleReservar}
-              disabled={reservando || pack.cantidad_disponible <= 0}
+              disabled={reservando || pack.cantidad_disponible <= 0 || isAlreadyReserved}
+              variant={isAlreadyReserved ? "secondary" : "default"}
             >
               {reservando
                 ? 'Reservando...'
-                : pack.cantidad_disponible <= 0
-                  ? 'Agotado'
-                  : 'Reservar Pack'}
+                : isAlreadyReserved
+                  ? 'Ya tienes este pack reservado'
+                  : pack.cantidad_disponible <= 0
+                    ? 'Agotado'
+                    : 'Reservar Pack'}
             </Button>
           )}
         </div>

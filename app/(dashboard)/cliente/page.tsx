@@ -58,6 +58,17 @@ export default async function ClienteMarketplacePage() {
     .eq('estado', 'disponible')
     .gt('cantidad_disponible', 0)
 
+  // Obtener TODAS las reservas pendientes para calcular el "stock visual" (soft-lock)
+  const { data: todasReservas } = await supabase
+    .from('reservas')
+    .select('pack_id')
+    .eq('estado', 'pendiente')
+
+  const countPendientes = (todasReservas || []).reduce((acc: Record<string, number>, r) => {
+    acc[r.pack_id] = (acc[r.pack_id] || 0) + 1
+    return acc
+  }, {})
+
   const packsConUbicacion = (packs ?? [])
     .filter((p: any) => p.comercios?.ubicacion)
     .map((p: any) => {
@@ -94,9 +105,26 @@ export default async function ClienteMarketplacePage() {
         direccion_texto: p.comercios.direccion_texto ?? '',
         lat: coords.lat,
         lng: coords.lng,
+        reservas_pendientes: countPendientes[p.id] || 0,
       }
     })
     .filter(Boolean)
+
+  // Obtener los packs que el cliente ya tiene reservados (pendientes)
+  const { data: { user } } = await supabase.auth.getUser()
+  let reservedPackIds: string[] = []
+  
+  if (user) {
+    const { data: reservas } = await supabase
+      .from('reservas')
+      .select('pack_id')
+      .eq('cliente_id', user.id)
+      .eq('estado', 'pendiente')
+      
+    if (reservas) {
+      reservedPackIds = reservas.map(r => r.pack_id)
+    }
+  }
 
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] sm:h-[calc(100vh-4.5rem)]">
@@ -112,7 +140,7 @@ export default async function ClienteMarketplacePage() {
 
       {/* Map */}
       <div className="relative z-0 flex-1 min-h-0 overflow-hidden rounded-2xl border shadow-sm">
-        <MapWrapper packs={packsConUbicacion as any} />
+        <MapWrapper packs={packsConUbicacion as any} reservedPackIds={reservedPackIds} />
       </div>
     </div>
   )

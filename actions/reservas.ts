@@ -118,7 +118,19 @@ export async function reservarPack(packId: string) {
     return { error: 'Ya tienes una reserva pendiente para este pack' }
   }
 
-  // 3. Insertar la reserva (el trigger de la BDD genera el OTP automáticamente)
+  // 3. Verificar límite de "Stock Suave" (no permitir reservar si las reservas pendientes agotan el stock visualmente)
+  const { count: pendingCount, error: countError } = await supabase
+    .from('reservas')
+    .select('*', { count: 'exact', head: true })
+    .eq('pack_id', packId)
+    .eq('estado', 'pendiente')
+
+  const totalPendientes = pendingCount || 0
+  if (pack.cantidad_disponible - totalPendientes <= 0) {
+    return { error: 'Este pack acaba de ser reservado por otro usuario' }
+  }
+
+  // 4. Insertar la reserva (el trigger de la BDD genera el OTP automáticamente)
   const { data: reserva, error: reservaError } = await supabase
     .from('reservas')
     .insert({
