@@ -20,7 +20,6 @@ const comercioLinks = [
 const clienteLinks = [
   { href: '/cliente', label: 'Mapa', icon: Map },
   { href: '/cliente/reservas', label: 'Mis Reservas', icon: Ticket },
-  { href: '/cliente/notificaciones', label: 'Alertas', icon: Bell },
   { href: '/cliente/perfil', label: 'Mi Perfil', icon: UserIcon },
 ]
 
